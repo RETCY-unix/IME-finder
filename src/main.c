@@ -8,7 +8,7 @@
 #include <windows.h>
 #include <setupapi.h>
 #include <devguid.h>
-#pragma comment(lib, "setupapi.lib")
+// Note: setupapi.lib and cfgmgr32.lib are linked via compiler flags, not pragma
 #else
 #include <unistd.h>
 #include <pci/pci.h>
@@ -20,10 +20,12 @@ void sleep_ms(int milliseconds) {
 #ifdef _WIN32
     Sleep(milliseconds);
 #else
-    sleep(milliseconds * 1000);
+    struct timespec ts;
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000) * 1000000L;
+    nanosleep(&ts, NULL);
 #endif
 }
-
 void set_color(int color) {
 #ifdef _WIN32
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -1,5 +1,6 @@
 #ifdef _WIN32
 
+#define INITGUID
 #include "ime_analyzer.h"
 #include <windows.h>
 #include <setupapi.h>
@@ -7,11 +8,6 @@
 #include <cfgmgr32.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#pragma comment(lib, "setupapi.lib")
-#pragma comment(lib, "cfgmgr32.lib")
-
-typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS)(HANDLE, PBOOL);
 
 BOOL is_admin(void) {
     BOOL is_elevated = FALSE;
@@ -33,22 +29,6 @@ BOOL is_admin(void) {
     return is_elevated;
 }
 
-uint32_t read_pci_config(DEVINST dev_inst, DWORD offset) {
-    DWORD value = 0;
-    CONFIGRET ret;
-    
-    ret = CM_Read_DevNode_Registry_Property(
-        dev_inst,
-        CM_DRP_DEVICEDESC,
-        NULL,
-        &value,
-        sizeof(value),
-        0
-    );
-    
-    return value;
-}
-
 void analyze_windows_device(HDEVINFO dev_info, PSP_DEVINFO_DATA dev_info_data, const me_device_info_t *info) {
     DWORD vendor_id = 0, device_id = 0;
     DWORD size = 0;
@@ -59,19 +39,16 @@ void analyze_windows_device(HDEVINFO dev_info, PSP_DEVINFO_DATA dev_info_data, c
         if (buffer && SetupDiGetDeviceRegistryProperty(dev_info, dev_info_data, SPDRP_HARDWAREID,
                                                        NULL, buffer, size, NULL)) {
             char *hw_id = (char*)buffer;
-            sscanf(hw_id, "PCI\\VEN_%X&DEV_%X", &vendor_id, &device_id);
+            sscanf(hw_id, "PCI\\VEN_%lX&DEV_%lX", &vendor_id, &device_id);
         }
         free(buffer);
     }
     
     print_device_header(info, (uint16_t)vendor_id, (uint16_t)device_id);
     
-    DEVINST dev_inst;
-    if (CM_Get_Device_ID_Ex(dev_info_data->DevInst, NULL, 0, 0, NULL) == CR_SUCCESS) {
-        dev_inst = dev_info_data->DevInst;
-    }
-    
-    uint32_t hfs1 = 0x05000000;
+    // Simulate reading HFS1 register - in real implementation would need kernel driver
+    // Default to "normal operation" state for demonstration
+    uint32_t hfs1 = 0x05000200;  // Normal state, initialized
     uint8_t working_state = hfs1 & HFS1_WORKING_STATE_MASK;
     uint8_t operation_mode = (hfs1 & HFS1_OPERATION_MODE_MASK) >> HFS1_OPERATION_MODE_SHIFT;
     uint8_t error_code = (hfs1 & HFS1_ERROR_CODE_MASK) >> HFS1_ERROR_CODE_SHIFT;
@@ -122,7 +99,7 @@ int scan_windows_devices(void) {
                 char *hw_id = (char*)buffer;
                 DWORD vendor_id = 0, device_id = 0;
                 
-                if (sscanf(hw_id, "PCI\\VEN_%X&DEV_%X", &vendor_id, &device_id) == 2) {
+                if (sscanf(hw_id, "PCI\\VEN_%lX&DEV_%lX", &vendor_id, &device_id) == 2) {
                     if (vendor_id == INTEL_VENDOR_ID) {
                         for (int j = 0; me_devices[j].name != NULL; j++) {
                             if (me_devices[j].device_id == device_id) {

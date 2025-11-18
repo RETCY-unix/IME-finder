@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -std=c11
+CFLAGS = -O2 -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=199309L
 LDFLAGS = -lpci
 TARGET = ime_analyzer
 SRC_DIR = src
@@ -8,7 +8,7 @@ INSTALL_DIR = /usr/local/bin
 
 SOURCES = $(SRC_DIR)/main.c \
           $(SRC_DIR)/devices.c \
-          $(SRC_DIR)/scanner_linux.c
+          $(SRC_DIR)/linux_scanner.c
 
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 
