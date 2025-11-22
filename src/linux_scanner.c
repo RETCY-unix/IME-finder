@@ -24,10 +24,9 @@ int scan_linux_devices(void) {
     if (geteuid() != 0) {
         set_color(COLOR_RED);
         printf("\n    ╔═══════════════════════════════════════════════════════════════════════════╗\n");
-        printf("    ║                           ACCESS DENIED                                   ║\n");
+        printf("    ║                         ACCESS DENIED                                     ║\n");
         printf("    ╠═══════════════════════════════════════════════════════════════════════════╣\n");
-        printf("    ║ Root privileges required for PCI configuration space access.              ║\n");
-        printf("    ║ Execute with: sudo ./ime_analyzer                                         ║\n");
+        printf("    ║ Need root to access PCI config space. Run: sudo ./ime_analyzer           ║\n");
         printf("    ╚═══════════════════════════════════════════════════════════════════════════╝\n");
         reset_color();
         return -1;
@@ -36,7 +35,7 @@ int scan_linux_devices(void) {
     struct pci_access *pacc = pci_alloc();
     if (!pacc) {
         set_color(COLOR_RED);
-        printf("\n    ERROR: Failed to allocate PCI access structure\n");
+        printf("\n    ERROR: Can't allocate PCI access\n");
         reset_color();
         return -1;
     }

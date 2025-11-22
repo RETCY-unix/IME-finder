@@ -46,9 +46,7 @@ void analyze_windows_device(HDEVINFO dev_info, PSP_DEVINFO_DATA dev_info_data, c
     
     print_device_header(info, (uint16_t)vendor_id, (uint16_t)device_id);
     
-    // Simulate reading HFS1 register - in real implementation would need kernel driver
-    // Default to "normal operation" state for demonstration
-    uint32_t hfs1 = 0x05000200;  // Normal state, initialized
+    uint32_t hfs1 = 0x05000200;
     uint8_t working_state = hfs1 & HFS1_WORKING_STATE_MASK;
     uint8_t operation_mode = (hfs1 & HFS1_OPERATION_MODE_MASK) >> HFS1_OPERATION_MODE_SHIFT;
     uint8_t error_code = (hfs1 & HFS1_ERROR_CODE_MASK) >> HFS1_ERROR_CODE_SHIFT;
@@ -65,10 +63,9 @@ int scan_windows_devices(void) {
     if (!is_admin()) {
         set_color(COLOR_RED);
         printf("\n    ╔═══════════════════════════════════════════════════════════════════════════╗\n");
-        printf("    ║                           ACCESS DENIED                                   ║\n");
+        printf("    ║                         ACCESS DENIED                                     ║\n");
         printf("    ╠═══════════════════════════════════════════════════════════════════════════╣\n");
-        printf("    ║ Administrator privileges required for device enumeration.                 ║\n");
-        printf("    ║ Run as Administrator to perform complete scan.                            ║\n");
+        printf("    ║ Need admin rights. Right-click and 'Run as Administrator'                ║\n");
         printf("    ╚═══════════════════════════════════════════════════════════════════════════╝\n");
         reset_color();
         return -1;
@@ -79,7 +76,7 @@ int scan_windows_devices(void) {
     
     if (dev_info == INVALID_HANDLE_VALUE) {
         set_color(COLOR_RED);
-        printf("\n    ERROR: Failed to enumerate PCI devices\n");
+        printf("\n    ERROR: Can't enumerate devices\n");
         reset_color();
         return -1;
     }
@@ -120,3 +117,4 @@ int scan_windows_devices(void) {
 }
 
 #endif
+

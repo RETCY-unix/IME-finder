@@ -12,12 +12,11 @@ echo Building Intel ME Security Analyzer for Windows (MinGW)
 echo ===============================================================================
 echo.
 
-REM Check if gcc is available
 where gcc >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo ERROR: GCC compiler not found!
     echo.
-    echo Please install MinGW-w64 or use build.bat with Visual Studio
+    echo Install MinGW-w64 or use build.bat with Visual Studio
     goto :error
 )
 

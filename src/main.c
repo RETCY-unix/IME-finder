@@ -58,6 +58,14 @@ void print_banner(void) {
     
     system("clear || cls");
     
+#ifdef _WIN32
+    set_color(COLOR_RED);
+    printf("\n========================================\n");
+    printf("  Intel ME Security Hunter v2.0\n");
+    printf("========================================\n");
+    reset_color();
+    printf("Hunting for backdoors in your system...\n\n");
+#else
     set_color(COLOR_RED);
     printf("\n");
     printf("    ███████╗███████╗ ██████╗██╗   ██╗██████╗ ██╗████████╗██╗   ██╗\n");
@@ -77,8 +85,9 @@ void print_banner(void) {
     printf("    ╚═╝╚═╝     ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝\n");
     reset_color();
     
-    printf("\n    Intel Management Engine Security Analyzer v2.0\n");
-    printf("    Analyzing system for ME/CSME/TXE firmware presence...\n\n");
+    printf("\n    Intel Management Engine Security Hunter v2.0\n");
+    printf("    Searching for Intel's hidden surveillance system...\n\n");
+#endif
 }
 
 void print_progress_bar(int percentage) {
@@ -103,12 +112,12 @@ void animate_scan(void) {
     if (opts.silent) return;
     
     const char* stages[] = {
-        "Initializing scan engine",
-        "Loading PCI device database",
-        "Probing system buses",
-        "Analyzing chipset",
-        "Detecting ME firmware",
-        "Reading security registers"
+        "Initializing hardware probe",
+        "Loading threat database",
+        "Scanning system buses",
+        "Analyzing chipset architecture",
+        "Detecting backdoor firmware",
+        "Reading surveillance registers"
     };
     
     for (int i = 0; i < 6; i++) {
@@ -125,16 +134,16 @@ void print_device_header(const me_device_info_t *info, uint16_t vendor_id, uint1
     
     set_color(COLOR_RED);
     printf("\n=============================================================================\n");
-    printf("DEVICE DETECTED\n");
+    printf("!! BACKDOOR COMPONENT DETECTED !!\n");
     printf("=============================================================================\n");
     reset_color();
     
-    printf("Name:          %s\n", info->name);
+    printf("Device Name:   %s\n", info->name);
     printf("Chipset:       %s\n", info->chipset);
     printf("Generation:    %s\n", info->generation);
     printf("Type:          %s\n", info->is_txe ? "TXE - Trusted Execution Engine" : "ME/CSME - Management Engine");
-    printf("Vendor ID:     0x%04X (Intel Corporation)\n", vendor_id);
-    printf("Device ID:     0x%04X\n", device_id);
+    printf("Vendor:        0x%04X (Intel Corporation)\n", vendor_id);
+    printf("Device:        0x%04X\n", device_id);
 }
 
 void print_register_analysis(uint32_t hfs1, uint8_t working_state, uint8_t op_mode, 
@@ -142,15 +151,15 @@ void print_register_analysis(uint32_t hfs1, uint8_t working_state, uint8_t op_mo
     if (opts.silent) return;
     
     printf("\n");
-    printf("FIRMWARE STATUS ANALYSIS\n");
+    printf("FIRMWARE STATUS\n");
     printf("-----------------------------------------------------------------------------\n");
     
     printf("HFS1 Register:     0x%08X\n", hfs1);
     printf("Working State:     %s\n", get_working_state_string(working_state));
     printf("Operation Mode:    %s\n", get_operation_mode_string(op_mode));
     printf("Error Code:        %d\n", error_code);
-    printf("Initialization:    %s\n", init_complete ? "COMPLETE" : "IN PROGRESS");
-    printf("Firmware Update:   %s\n", fw_update ? "IN PROGRESS" : "INACTIVE");
+    printf("Initialized:       %s\n", init_complete ? "YES" : "IN PROGRESS");
+    printf("Updating:          %s\n", fw_update ? "YES" : "NO");
 }
 
 void print_capabilities_warning(void) {
@@ -158,61 +167,67 @@ void print_capabilities_warning(void) {
     
     printf("\n");
     set_color(COLOR_RED);
-    printf("SUBSYSTEM CAPABILITIES\n");
+    printf("WHAT THIS THING CAN DO TO YOUR MACHINE\n");
     printf("-----------------------------------------------------------------------------\n");
     reset_color();
     
-    printf("- Unrestricted memory access (Ring -3 privilege)\n");
-    printf("- Network interface control (Out-of-band)\n");
-    printf("- Persistent storage access (Disk encryption keys)\n");
-    printf("- CPU execution monitoring (System Management Mode)\n");
-    printf("- Operates while system powered off\n");
-    printf("- Remote management capabilities (AMT/vPro)\n");
-    printf("- Firmware update mechanism\n");
-    printf("- Cryptographic key storage\n");
+    printf("- Full RAM access (even when YOU can't see it)\n");
+    printf("- Network control (separate from YOUR operating system)\n");
+    printf("- Disk access (including encrypted drives)\n");
+    printf("- CPU control (runs below Ring 0, deeper than your OS)\n");
+    printf("- Works when system is \"off\" (if plugged in)\n");
+    printf("- Remote access (AMT/vPro lets others control your PC)\n");
+    printf("- Self-updating (without asking you)\n");
+    printf("- Stores crypto keys (that you don't control)\n");
 }
 
 void print_risk_assessment(const char* risk_level, uint8_t working_state, uint8_t op_mode) {
     if (opts.silent) return;
     
     printf("\n");
-    printf("RISK ASSESSMENT\n");
+    printf("SECURITY ASSESSMENT\n");
     printf("-----------------------------------------------------------------------------\n");
     
     if (strcmp(risk_level, "CRITICAL") == 0) {
         set_color(COLOR_RED);
-        printf("THREAT LEVEL: CRITICAL\n");
+        printf("STATUS: YOU'RE COMPLETELY PWNED\n");
         reset_color();
-        printf("Intel ME is fully operational - maximum threat condition\n");
+        printf("\nThis thing is running at full power. Intel has a backdoor into your machine\n");
+        printf("right now, whether you like it or not. It can see everything, do anything,\n");
+        printf("and you can't stop it without serious hardware modifications.\n");
         
         print_capabilities_warning();
         
         printf("\n");
         set_color(COLOR_YELLOW);
-        printf("RECOMMENDED ACTIONS\n");
+        printf("WHAT YOU CAN TRY (NO GUARANTEES)\n");
         printf("-----------------------------------------------------------------------------\n");
         reset_color();
-        printf("1. Check for critical firmware vulnerabilities\n");
-        printf("2. Disable AMT/vPro if not required for operations\n");
-        printf("3. Consider me_cleaner for firmware neutralization\n");
-        printf("4. Enable HAP bit if platform supports this feature\n");
-        printf("5. Monitor all network traffic for unauthorized ME activity\n");
-        printf("6. Implement network segmentation and firewall rules\n");
-        printf("7. Consider hardware replacement with pre-neutered systems\n");
+        printf("1. Update firmware (might patch known exploits, adds new ones)\n");
+        printf("2. Disable AMT/vPro (if you're not using it, turn it OFF)\n");
+        printf("3. Try me_cleaner (neutralizes some ME functionality)\n");
+        printf("4. Enable HAP bit (if your board supports it - rare)\n");
+        printf("5. Firewall everything (watch for suspicious ME network traffic)\n");
+        printf("6. Air-gap sensitive systems (seriously consider it)\n");
+        printf("7. Buy pre-neutered hardware (Purism, System76, or old Thinkpads)\n");
+        printf("\nReality check: You can't fully remove this without a soldering iron\n");
+        printf("and deep knowledge of your motherboard. Even then, good luck.\n");
         
     } else if (strcmp(risk_level, "ELEVATED") == 0) {
         set_color(COLOR_YELLOW);
-        printf("THREAT LEVEL: ELEVATED\n");
+        printf("STATUS: SOMETHING'S WEIRD\n");
         reset_color();
-        printf("ME detected in non-standard state - verify configuration\n");
+        printf("\nME is in a non-standard state. Could be recovering from an error,\n");
+        printf("could be disabled, or could be in some other mode. Check your BIOS.\n");
         
     } else {
         set_color(COLOR_GREEN);
-        printf("THREAT LEVEL: MITIGATED\n");
+        printf("STATUS: PARTIALLY CONTAINED\n");
         reset_color();
-        printf("ME appears disabled or limited - reduced threat level\n");
-        printf("\nNote: Even in disabled states, ME may retain basic functionality.\n");
-        printf("Complete removal impossible without hardware modification.\n");
+        printf("\nLooks like ME is disabled or limited. That's good, but don't celebrate yet.\n");
+        printf("\nEven in \"disabled\" states, parts of ME still run. You can't kill it completely\n");
+        printf("without hardware modifications. It's like a zombie - you can slow it down,\n");
+        printf("but it never truly dies.\n");
     }
 }
 
@@ -223,8 +238,22 @@ void print_scan_complete(int found) {
     printf("=============================================================================\n");
     printf("SCAN COMPLETE\n");
     printf("=============================================================================\n");
-    printf("Devices Found: %d\n", found);
-    printf("Status: %s\n", found ? "THREATS DETECTED" : "NO ME DEVICES FOUND");
+    
+    if (found > 0) {
+        printf("ME Devices Found:  %d\n", found);
+        set_color(COLOR_RED);
+        printf("Verdict:           YOUR SYSTEM IS COMPROMISED\n");
+        reset_color();
+        printf("\nYou've got Intel's backdoor running on your machine. Welcome to modern\n");
+        printf("computing, where your CPU comes with built-in surveillance capabilities.\n");
+    } else {
+        printf("ME Devices Found:  0\n");
+        set_color(COLOR_GREEN);
+        printf("Verdict:           NO ME DETECTED (LUCKY YOU)\n");
+        reset_color();
+        printf("\nEither you're running AMD, or you've got an older Intel system without ME.\n");
+        printf("Enjoy your relative freedom while it lasts.\n");
+    }
 }
 
 int main(int argc, char **argv) {
@@ -253,10 +282,11 @@ int main(int argc, char **argv) {
     
     if (!opts.silent) {
         printf("\n");
-        printf("Resources:\n");
-        printf("  https://github.com/corna/me_cleaner\n");
-        printf("  https://security-center.intel.com\n");
-        printf("  https://github.com/platomav/MEAnalyzer\n");
+        printf("Learn more:\n");
+        printf("  https://github.com/corna/me_cleaner (neutralization tool)\n");
+        printf("  https://security-center.intel.com (Intel's security bulletins)\n");
+        printf("  https://github.com/platomav/MEAnalyzer (deep analysis)\n");
+        printf("  https://www.eff.org/deeplinks/2017/05/intels-management-engine-security-hazard-and-users-need-way-disable-it\n");
         printf("\n");
     }
     

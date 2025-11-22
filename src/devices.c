@@ -51,24 +51,24 @@ const char* get_working_state_string(uint8_t state) {
         case ME_WORKING_STATE_INIT: return "INITIALIZING";
         case ME_WORKING_STATE_RECOVERY: return "RECOVERY MODE";
         case ME_WORKING_STATE_DISABLED: return "PLATFORM DISABLED";
-        case ME_WORKING_STATE_NORMAL: return "NORMAL OPERATION";
+        case ME_WORKING_STATE_NORMAL: return "FULLY OPERATIONAL";
         case ME_WORKING_STATE_WAIT: return "WAITING";
         case ME_WORKING_STATE_TRANSITION: return "TRANSITIONING";
-        default: return "UNKNOWN";
+        default: return "UNKNOWN STATE";
     }
 }
 
 const char* get_operation_mode_string(uint8_t mode) {
     switch(mode) {
-        case ME_OP_MODE_NORMAL: return "Normal";
-        case ME_OP_MODE_DEBUG: return "Debug";
+        case ME_OP_MODE_NORMAL: return "Normal (Unrestricted)";
+        case ME_OP_MODE_DEBUG: return "Debug Mode";
         case ME_OP_MODE_SOFT_TEMP_DISABLE: return "Soft Temporary Disable";
-        case ME_OP_MODE_SECOVR_JMPR: return "Security Override Jumper";
-        case ME_OP_MODE_SECOVR_MSG: return "Security Override Message";
-        case ME_OP_MODE_DAL: return "DAL";
-        case ME_OP_MODE_ALT_DISABLE: return "AltMeDisable Bit Set";
-        case ME_OP_MODE_HAP_DISABLE: return "HAP/AltMeDisable (High Assurance Platform)";
-        default: return "Unknown";
+        case ME_OP_MODE_SECOVR_JMPR: return "Security Override via Jumper";
+        case ME_OP_MODE_SECOVR_MSG: return "Security Override via Message";
+        case ME_OP_MODE_DAL: return "DAL Mode";
+        case ME_OP_MODE_ALT_DISABLE: return "AltMeDisable Active";
+        case ME_OP_MODE_HAP_DISABLE: return "HAP/AltMeDisable (High Assurance)";
+        default: return "Unknown Mode";
     }
 }
 
